@@ -1,0 +1,21 @@
+<head>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <nav>
+    <b><a href="/">HOME</a></b>
+    <b><a href="/books">BOOK LIST</a></b>
+    <b><a href="/books/create">CREATE BOOK</a></b>
+    <div align="right">
+        <input type="text" id="searchBar" placeholder="Search Bookemo..." align="right" style="padding: 4px 3px;" onkeyup="if(event.keyCode == 13) return search();">
+        <button onclick="return search()" style="margin: 0px;">Search</button>
+    </div>
+</nav>
+<script>
+    function search(){
+        let q = document.querySelector("#searchBar").value;
+        if (q==='') return false;
+        window.location.assign(`/books?q=${q}`);
+    }
+</script>
+</body>

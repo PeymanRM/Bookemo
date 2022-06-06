@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Books List</title>
+</head>
+
+<body>
+    <%- include('partials/header'); -%>
+    <% if(booksList.length == 0){ %>
+        <h2>No Books Found!</h2>
+        <% } %>
+    <ul>
+        <% booksList.forEach((book)=>{ %>
+            <% const href=`/books/${book._id}`;%>
+            <a href=<%= href %>><li>
+                <img src="<%= book.thumbnailUrl %>" height="188" width="150"><br>
+                <b><%= book.title %></b><br>
+                <%= book.authors.join(", ") %><br>
+            </li></a>
+            <% }); %>
+    </ul>
+   <div align="center" style="padding: 20px;">
+    <% for(let pageIndex=1; pageIndex <= pageCount; pageIndex++) { %>
+        <% if(pageCount==1) break; %>
+        <% const onclickFunc = `return changePage("${pageIndex}")`%>
+        <button onclick="<%= onclickFunc %>" style="margin:0px"><%= pageIndex %></button>
+    <% } %>
+   </div>
+</body>
+
+<script>
+    function changePage(pageIndex){
+        const params = new URLSearchParams(window.location.search);
+        params.set("page",pageIndex);
+        window.location.search = params;
+    }
+</script>
+
+</html>

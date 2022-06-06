@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users List</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body>
+    <nav>
+        <b><a href="/">HOME</a></b>
+        <b><a href="/books">BOOKS LIST</a></b>
+        <b><a href="/books/create">CREATE BOOK</a></b>
+        <div align="right">
+            <input type="text" id="searchBar" placeholder="Search Users..." align="right" style="padding: 4px 3px;"
+                onkeyup="if(event.keyCode == 13) return search();">
+            <button onclick="return search()" style="margin: 0px;">Search</button>
+        </div>
+    </nav>
+    <% if(usersList.length==0){ %>
+        <h2>No Users Found!</h2>
+        <% } else {%>
+            <div align="center">
+                <b>Total Users: <%= usersList.length %></b>
+            </div>
+            <ul>
+                <% usersList.forEach((user)=>{ %>
+                    <li>
+                        <b>
+                            <%= user.name %>
+                        </b><br>
+                        <%= user.emailAddress %><br>
+                            <%= user.mobileNumber %><br>
+                                <%if(user.role=='user' ) {%>
+                                    <% const clickPromote=`return promoteUser("${user._id}")`%>
+                                        <% const clickDelete=`return deleteUser("/users/delete/${user._id}")`%>
+                                            <button onclick="<%= clickPromote %>">Promote</button>
+                                            <button onclick="<%= clickDelete %>">Delete User</button>
+                                            <% } %>
+                    </li>
+                    <% }); %>
+            </ul>
+            <div align="center" style="padding: 20px;">
+                <% for(let pageIndex=1; pageIndex <=pageCount; pageIndex++) { %>
+                    <% if(pageCount==1) break; %>
+                        <% const onclickFunc=`return changePage("${pageIndex}")`%>
+                            <button onclick="<%= onclickFunc %>" style="margin:0px">
+                                <%= pageIndex %>
+                            </button>
+                            <% } %>
+            </div>
+            <% } %>
+
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+    function changePage(pageIndex) {
+        const params = new URLSearchParams(window.location.search);
+        params.set("page", pageIndex);
+        window.location.search = params;
+    }
+    function search() {
+        let q = document.querySelector("#searchBar").value;
+        if (q === '') return false;
+        window.location.assign(`/users?q=${q}`);
+    }
+    function promoteUser(userId) {
+        const result = confirm("WARNING: Are you sure you want to promote this user to admin?!");
+        if (result) {
+            axios.put("/users/promote", {userId}).then(() => {
+                alert(`User Promoted!`);
+                window.location.reload();
+            }).catch(err => {
+                alert(err.response.data.message);
+            });
+        } else return false;
+    }
+    function deleteUser(url) {
+        const result = confirm("WARNING: Are you sure you want to delete this user?! \n Note that once an account is deleted, there will be no way back!");
+        if (result) {
+            axios.delete(url).then(() => {
+                alert(`User Deleted!`);
+                window.location.reload();
+            }).catch(err => {
+                alert(err.response.data.message);
+            });
+        } else return false;
+    }
+</script>
+</body>
+
+
+</html>

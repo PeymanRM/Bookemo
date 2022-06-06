@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Book</title>
+</head>
+
+<body>
+    <%- include('partials/header'); -%>
+    <br>
+    <form action="http://localhost:3000/books" method="POST" name="info" enctype="multipart/form-data" align= "center">
+        <input type="text" name="_id" placeholder="_id"> <br>
+        <input type="text" name="title" placeholder="Title" /> <br>
+        <input type="text" name="isbn" placeholder="ISBN" /> <br>
+        <input type="number" name="pageCount" placeholder="Page Count" /> <br>
+        <b>Publish Date: </b><input type="date" name="publishedDate"> <br>
+        <b>Thumbnail: </b><input type="file" name="thumbnail" accept="image/*"> <br>
+        <textarea name="shortDescription" placeholder="Short Description" ></textarea> <br>
+        <textarea name="longDescription" placeholder="Long Description" ></textarea> <br>
+        <table align="center">
+            <tr>
+                <td><b>Status:</b></td>
+                <td><input type="radio" name="status" value="PUBLISH" />PUBLISH <br /></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><input type="radio" name="status" value="MEAP" />MEAP <br /></td>
+            </tr>
+        </table>
+        <input type="text" name="authors" placeholder="Author(s)" /> <br>
+        <input type="text" name="categories" placeholder="Categories" /> <br>
+        <button type="submit">Send</button>
+    </form>
+
+</html>
+
+</body>
+
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= book.title %></title>
+</head>
+<body>
+    <%- include('partials/header'); -%> <br>
+
+    <b>_id: </b><%= book._id %> <br>
+    <b>Title: </b><%= book.title %> <br>
+    <b>ISBN: </b><%= book.isbn %> <br>
+    <b>Page Count: </b><%= book.pageCount %> <br>
+    <b>Publish Date: </b><%= book.publishedDate %> <br>
+    <b>ThumbnailURL: </b><a href=<%= book.thumbnailUrl %>><%= book.thumbnailUrl %></a> <br>
+    <b>Short Description: </b><p><%= book.shortDescription %></p>
+    <b>Long Description: </b><p><%= book.longDescription %></p>
+    <b>Status: </b><%= book.status %> <br>
+    <b>Author(s): </b><%= book.authors.join(", ") %> <br>
+    <b>Categories: </b><%= book.categories.join(", ") %> <br><br>
+    <% const clickEdit=`return editBook("/books/${book._id}")`%>
+    <% const clickDelete=`return deleteBook("/books/${book._id}")`%>
+    <% if (role === 'admin'){ %>
+    <button onclick="<%= clickEdit %>">Update</button><button onclick="<%= clickDelete %>">Delete</button>
+    <% } %>
+    <script>
+        async function editBook(url){
+            url += "/edit";
+            window.location.assign(url);
+        }
+        async function deleteBook(url){
+            const result = confirm("Are you sure you want to delete this book?");
+            if (result==true){
+                const response = await fetch(url,{
+                    method: "DELETE"
+                });
+                if (response.status == 200) {
+                window.location.assign("/");
+                alert("Successfuly Deleted");
+                } else {
+                alert("Something went wrong!!");
+            }
+            }
+            
+        }
+    </script>
+</body>
+</html>

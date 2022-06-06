@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Book</title>
+</head>
+
+<body>
+    <%- include('partials/header'); -%>
+    <br>
+    <form  name="info" align="center">
+        <b>_id:</b><input type="text" name="_id" value="<%= book._id %>"> <br>
+        <b>Title:</b><input type="text" name="title" value="<%= book.title %>"> <br>
+        <b>ISBN:</b><input type="text" name="isbn" value="<%= book.isbn %>"> <br>
+        <b>Page Count:</b><input type="number" name="pageCount" value="<%= book.pageCount %>" /> <br>
+        <% let publishedDate = ""; %>
+        <% if (book.publishedDate) {%>
+            <% publishedDate = book.publishedDate.toISOString().slice(0, 10); %>
+        <% } %>
+        <b>Publish Date:</b><input type="date" name="publishedDate" value="<%= publishedDate %>"> <br>
+        <b>ThumbnailURL:</b><input type="url" name="thumbnailUrl" value="<%= book.thumbnailUrl %>"> <br>
+        <b>Short Description:</b><br><textarea name="shortDescription"><%= book.shortDescription %></textarea> <br>
+        <b>Long Description:</b><br><textarea name="longDescription"><%= book.longDescription %></textarea> <br>
+        <table align="center">
+            <tr>
+                <td><b>Status:</b></td>
+                <td><input type="radio" name="status" value="PUBLISH" 
+                    <% if(book.status=="PUBLISH") {%>
+                    checked
+                    <% } %>
+                />PUBLISH<br /></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><input type="radio" name="status" value="MEAP" 
+                    <% if(book.status=="MEAP") {%>
+                        checked
+                    <% } %>
+                />MEAP<br /></td>
+            </tr>
+        </table>
+        <b>Author(s):</b><input type="text" name="authors" value="<%= book.authors.join(", ") %>" /> <br>
+        <b>Categories:</b><input type="text" name="categories" value="<%= book.categories.join(", ") %>" /> <br>
+        <button type="submit">Send</button>
+    </form>
+    <script>
+        const form = document.querySelector("form");
+        form.addEventListener("submit",async ()=>{
+            let data ={};
+            const form = document.querySelector("form");
+            form.childNodes.forEach((item)=>{
+                if(item.name != '') {
+                data[item.name] = item.value;
+                }
+            });
+            if(form.elements[8].checked){
+                data[form.elements[8].name] = form.elements[8].value;
+
+            }
+            if(form.elements[9].checked){
+                data[form.elements[9].name] = form.elements[9].value;
+            }
+            let url = window.location.href;
+            const response = await fetch(url,{
+                method: "PUT",
+                headers: {
+                    'Content-type': 'application/json; charset=UTF-8' // Indicates the content 
+                },
+                body: JSON.stringify(data)
+            });            
+            const responseData = await response.json();
+            console.log(responseData);
+            if (response.status == 200) {
+                alert("Successfuly Updated");
+                window.location.assign(`/books/${responseData.id}`);
+            } else {
+                if(responseData.message){
+                    alert(responseData.message);   
+                } else {
+                alert("Something went wrong!");
+                }
+                window.location.assign(url);
+            }
+           
+
+        });
+    </script>
+</html>
+
+</body>
+
+</html>

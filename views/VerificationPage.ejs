@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verification</title>
+</head>
+
+<%- include('partials/header'); -%>
+
+    <body>
+        <ul style="grid-template-columns: 1fr;">
+                <li>
+                    A link to verify your email address has been emailed to <b>
+                        <%= emailAddress %>
+                    </b><br>Make sure you check the spam folder!
+                </li>
+                <li>
+                    Please enter confirmation code that we sent to <b>
+                        <%= mobileNumber %>
+                    </b><br>
+                    <input type="number" id="confirmationCode" placeholder="Confirmation code">
+                </li>
+
+        </ul>
+        <div align="center">
+            <% const onclickFunc=`return verify("${userId}")` %>
+                <a href="/"><button>Cancel</button></a>
+                <button onclick="<%= onclickFunc %>" align="center">Verify</button>
+        </div>
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+        <script>
+            async function verify(userId) {
+                const confirmationCode = document.querySelector("#confirmationCode").value;
+                if (confirmationCode < 100000 || confirmationCode > 999999) {
+                    alert("The confirmation code must be a 6 digit number");
+                } else {
+                    const url = `/auth/verification/verify-account/${userId}`;
+                    const response = await axios.post(url, { confirmationCode: confirmationCode }).then(({ data, headers }) => {
+                        if (data.success === true) {
+                            // localStorage.setItem("token", headers['x-auth-token']);
+                            alert("You have successfully signed in");
+                            window.location.assign("/");
+                        }
+                    }).catch(err => {
+                        alert(err.response.data.message);
+                    })
+                }
+            }
+        </script>
+    </body>
+
+</html>

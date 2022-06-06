@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+</head>
+
+
+<%- include('partials/header'); -%>
+
+    <body>
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+        <script>
+            window.addEventListener('load', async () => {
+                axios.get("/users/profile", {
+                    // headers: {
+                    //     "X-Auth-Token": localStorage.getItem("token")
+                    // }
+                }).then(({ data }) => {
+                    let div = `<div align="center">
+                        <b>Welcome ${data.name}</b><br>
+                        <b>Email:</b><br>
+                        ${data.emailAddress}<br>
+                        <b>Mobile Number:</b><br>
+                        ${data.mobileNumber}<br>
+                        <button onclick="return logout()">Log Out</button><br>
+                        <button onclick="return deleteAccount()">Delete Account</button><br>`;
+                    if (data.role === "admin") div += `<button onclick="return seeUsers()">See Users</button>`;
+                    div += `</div>`
+                    document.body.innerHTML += div;
+                }).catch(({ response }) => {
+                    if (response.status == 401) {
+                        document.body.innerHTML += `<ul style="grid-template-columns: 1fr 1fr;">
+                                <li style="width: 200px; margin-left: 200px;">
+                                    <h2><B>Login</B></h2>
+                                    <input type="text" name="identifier" id="loginIdentifier" placeholder="Email or Mobile Number"><br>
+                                    <input type="password" name="password" id="loginPassword" placeholder="Password"><br>
+                                    <ins style="font-size: 13px; cursor: pointer;" onclick="return forgotPassword()">Forgot Password?</ins><br>
+                                    <button onclick="return login()">Login</button>
+                                </li>
+                                <li style="width: 200px; margin-left: 200px;">
+                                    <h2><B>Sign Up</B></h2>
+                                    <form action="http://localhost:3000/auth/register" method="POST">
+                                        <input type="text" name="name" placeholder="Name"><br>
+                                        <input type="text" name="mobileNumber" placeholder="Mobile Number"><br>
+                                        <input type="email" name="emailAddress" placeholder="Email Address"><br>
+                                        <input type="password" name="password" placeholder="Password"><br>
+                                        <input type="password" name="passwordReEntry" placeholder="Enter Password Again"><br>
+                                        <button type="submit">Sign Up</button>
+                                        </form>
+                                        </li>
+                            </ul>`;
+                    } else alert(response.data.message);
+
+                });
+            });
+            async function login() {
+                let data = {
+                    identifier: document.querySelector("#loginIdentifier").value.trim().toLocaleLowerCase(),
+                    password: document.querySelector("#loginPassword").value,
+                }
+                axios.post("/auth/login", data).then(({ data, headers }) => {
+                    if (data.success === true) {
+                        // localStorage.setItem("token", headers['x-auth-token']);
+                        alert("You have successfully logged in");
+                        window.location.reload();
+                    }
+                }).catch(err => {
+                    alert(err.response.data.message);
+
+                });
+            }
+
+            async function forgotPassword(){
+                const identifier = document.querySelector("#loginIdentifier").value.trim().toLocaleLowerCase();
+                axios.post("/auth/forgot-password", {identifier}).then(({ data, headers }) => {
+                        alert("If such an account is in our database, we will send you a link to log into your account.");
+                }).catch(err => {
+                    alert(err.response.data.message);
+                });
+            }
+
+            function logout() {
+                const result = confirm("Are you sure you want to log out?");
+                if (result) {
+                    axios.get("/users/logout").then(() => {
+                        alert(`Come Back Soon!`);
+                        window.location.reload();
+                    }).catch(err => {
+                        alert(err.response.data.message);
+                    });
+                } else return false;
+            }
+
+            async function deleteAccount()  {
+                const password = window.prompt("WARNING: Are you sure you want to delete your account? \n If you are, enter your PASSWORD in order to delete your account. \n Note that once an account is deleted, there will be no way back!");
+                if (password) {
+                    axios.post("/users/delete-account", {password}).then(() => {
+                        alert(`Account Successfully Deleted!`);
+                        window.location.reload();
+                    }).catch(err => {
+                        alert(err.response.data.message);
+                    });
+                } else return false;
+            }
+
+            function seeUsers() {
+                window.location.assign("/users");
+            }
+        </script>
+    </body>
+
+</html>
